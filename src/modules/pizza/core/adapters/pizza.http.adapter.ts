@@ -95,10 +95,10 @@ export class PizzaHttpAdapter implements IPizzaPort {
   ): Promise<PizzaDomainModel.PizzaDto[]> {
     try {
       const params: Record<string, string> = {};
-      if (filters.ingredient !== undefined) params.ingredient = filters.ingredient;
-      if (filters.ingredients !== undefined) params.ingredients = filters.ingredients;
-      if (filters.name !== undefined) params.name = filters.name;
-      if (filters.available !== undefined) params.available = String(filters.available);
+      if (filters.ingredient != null) params.ingredient = filters.ingredient;
+      if (filters.ingredients != null) params.ingredients = filters.ingredients;
+      if (filters.name != null) params.name = filters.name;
+      if (filters.available != null) params.available = String(filters.available);
       const res = await this.api.get<PizzaDomainModel.PizzaDto[]>("/pizzas", { params });
       return res.data;
     } catch (error) {

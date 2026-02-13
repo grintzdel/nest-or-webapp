@@ -35,9 +35,21 @@ export const OrderCard: React.FC<OrderCardProps> = ({ order, index = 0, onDelete
           {order.processed ? "Traitee" : "En attente"}
         </span>
       </div>
-      <p className="mt-2 text-lg font-bold text-[var(--accent)]">
-        {order.totalPrice.toFixed(2)} &euro;
-      </p>
+      <div className="mt-2 flex items-baseline gap-2">
+        <p className="text-lg font-bold text-[var(--accent)]">
+          {order.totalPrice.toFixed(2)} &euro;
+        </p>
+        {order.discountAmount > 0 && (
+          <>
+            <p className="text-sm text-[var(--muted)] line-through">
+              {(order.totalPrice + order.discountAmount).toFixed(2)} &euro;
+            </p>
+            <span className="rounded-md bg-emerald-100 px-1.5 py-0.5 text-[10px] font-semibold text-emerald-700">
+              -{Math.round(order.discountPercentage)}%
+            </span>
+          </>
+        )}
+      </div>
       <div className="mt-3 flex flex-wrap gap-1.5">
         {order.pizzas.length > 0 && (
           <span className="rounded-md bg-indigo-50 px-2 py-0.5 text-xs font-medium text-indigo-600">

@@ -3,7 +3,7 @@ import { app } from "@nest-or-front/modules/app/main";
 import { DessertDomainModel } from "@nest-or-front/modules/dessert/core/model/dessert.domain-model";
 
 export function useFilterDesserts(filters: DessertDomainModel.DessertFiltersDto) {
-  const hasFilters = Object.values(filters).some((v) => v !== undefined);
+  const hasFilters = Object.values(filters).some((v) => v != null);
   return useQuery<DessertDomainModel.DessertDto[]>({
     queryKey: ["filterDesserts", filters],
     queryFn: () => app.dependencies.dessertGateway.filterDesserts(filters),

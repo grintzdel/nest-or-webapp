@@ -67,17 +67,17 @@ export class DrinkInMemoryAdapter implements IDrinkPort {
     filters: DrinkDomainModel.DrinkFiltersDto
   ): Promise<DrinkDomainModel.DrinkDto[]> {
     let result = [...this.drinks];
-    if (filters.name !== undefined) {
+    if (filters.name != null) {
       const q = filters.name.toLowerCase();
       result = result.filter((d) => d.name.toLowerCase().includes(q));
     }
-    if (filters.available !== undefined) {
+    if (filters.available != null) {
       result = result.filter((d) => d.available === filters.available);
     }
-    if (filters.withAlcohol !== undefined) {
+    if (filters.withAlcohol != null) {
       result = result.filter((d) => d.withAlcohol === filters.withAlcohol);
     }
-    if (filters.size !== undefined) {
+    if (filters.size != null) {
       const q = filters.size.toLowerCase();
       result = result.filter((d) => d.size.toLowerCase().includes(q));
     }

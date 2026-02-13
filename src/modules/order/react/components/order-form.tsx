@@ -12,6 +12,20 @@ type OrderFormProps = {
   isPending?: boolean;
 };
 
+function getCount(list: number[], id: number) {
+  return list.filter((i) => i === id).length;
+}
+
+function addItem(list: number[], id: number) {
+  return [...list, id];
+}
+
+function removeItem(list: number[], id: number) {
+  const idx = list.indexOf(id);
+  if (idx === -1) return list;
+  return [...list.slice(0, idx), ...list.slice(idx + 1)];
+}
+
 export const OrderForm: React.FC<OrderFormProps> = ({ onSubmit, isPending }) => {
   const { data: pizzas, isLoading: loadingPizzas } = useListPizzas();
   const { data: drinks, isLoading: loadingDrinks } = useListDrinks();
@@ -22,10 +36,6 @@ export const OrderForm: React.FC<OrderFormProps> = ({ onSubmit, isPending }) => 
   const [selectedDesserts, setSelectedDesserts] = useState<number[]>([]);
 
   const isLoading = loadingPizzas || loadingDrinks || loadingDesserts;
-
-  const toggleItem = (list: number[], setList: (v: number[]) => void, id: number) => {
-    setList(list.includes(id) ? list.filter((i) => i !== id) : [...list, id]);
-  };
 
   const total = useMemo(() => {
     let sum = 0;
@@ -64,26 +74,47 @@ export const OrderForm: React.FC<OrderFormProps> = ({ onSubmit, isPending }) => 
           <span>{"\uD83C\uDF55"}</span> Pizzas
         </h3>
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-          {pizzas?.filter((p) => p.available).map((pizza) => (
-            <button
-              key={pizza.id}
-              type="button"
-              onClick={() => toggleItem(selectedPizzas, setSelectedPizzas, pizza.id)}
-              className={`rounded-xl border-2 p-4 text-left transition-all ${
-                selectedPizzas.includes(pizza.id)
-                  ? "border-[var(--accent)] bg-[var(--accent-light)] shadow-sm"
-                  : "border-[var(--border)] bg-white hover:border-gray-300 hover:shadow-sm"
-              }`}
-            >
-              <p className="font-semibold text-[var(--foreground)]">{pizza.name}</p>
-              <p className="mt-1 text-sm font-bold text-[var(--accent)]">{pizza.price.toFixed(2)} &euro;</p>
-              {selectedPizzas.includes(pizza.id) && (
-                <span className="mt-2 inline-block rounded-full bg-[var(--accent)] px-2 py-0.5 text-xs font-medium text-white">
-                  {"\u2713"} Selectionne
-                </span>
-              )}
-            </button>
-          ))}
+          {pizzas?.filter((p) => p.available).map((pizza) => {
+            const count = getCount(selectedPizzas, pizza.id);
+            return (
+              <div
+                key={pizza.id}
+                className={`rounded-xl border-2 p-4 transition-all ${
+                  count > 0
+                    ? "border-[var(--accent)] bg-[var(--accent-light)] shadow-sm"
+                    : "border-[var(--border)] bg-white"
+                }`}
+              >
+                <p className="font-semibold text-[var(--foreground)]">{pizza.name}</p>
+                <p className="mt-1 text-sm font-bold text-[var(--accent)]">{pizza.price.toFixed(2)} &euro;</p>
+                <div className="mt-2 flex flex-wrap gap-1">
+                  {pizza.ingredients.map((ingredient) => (
+                    <span key={ingredient} className="rounded-md bg-gray-100 px-1.5 py-0.5 text-[10px] font-medium text-gray-600">
+                      {ingredient}
+                    </span>
+                  ))}
+                </div>
+                <div className="mt-3 flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setSelectedPizzas(removeItem(selectedPizzas, pizza.id))}
+                    disabled={count === 0}
+                    className="flex h-7 w-7 items-center justify-center rounded-lg border border-[var(--border)] text-sm font-bold text-[var(--foreground)] hover:bg-gray-50 disabled:opacity-30"
+                  >
+                    -
+                  </button>
+                  <span className="min-w-[1.5rem] text-center text-sm font-semibold text-[var(--foreground)]">{count}</span>
+                  <button
+                    type="button"
+                    onClick={() => setSelectedPizzas(addItem(selectedPizzas, pizza.id))}
+                    className="flex h-7 w-7 items-center justify-center rounded-lg border border-[var(--accent)] bg-[var(--accent)] text-sm font-bold text-white hover:opacity-90"
+                  >
+                    +
+                  </button>
+                </div>
+              </div>
+            );
+          })}
         </div>
       </div>
 
@@ -92,27 +123,50 @@ export const OrderForm: React.FC<OrderFormProps> = ({ onSubmit, isPending }) => 
           <span>{"\uD83E\uDDCB"}</span> Boissons
         </h3>
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-          {drinks?.filter((d) => d.available).map((drink) => (
-            <button
-              key={drink.id}
-              type="button"
-              onClick={() => toggleItem(selectedDrinks, setSelectedDrinks, drink.id)}
-              className={`rounded-xl border-2 p-4 text-left transition-all ${
-                selectedDrinks.includes(drink.id)
-                  ? "border-[var(--accent)] bg-[var(--accent-light)] shadow-sm"
-                  : "border-[var(--border)] bg-white hover:border-gray-300 hover:shadow-sm"
-              }`}
-            >
-              <p className="font-semibold text-[var(--foreground)]">{drink.name}</p>
-              <p className="mt-0.5 text-xs text-[var(--muted)]">{drink.size}</p>
-              <p className="mt-1 text-sm font-bold text-[var(--accent)]">{drink.price.toFixed(2)} &euro;</p>
-              {selectedDrinks.includes(drink.id) && (
-                <span className="mt-2 inline-block rounded-full bg-[var(--accent)] px-2 py-0.5 text-xs font-medium text-white">
-                  {"\u2713"} Selectionne
-                </span>
-              )}
-            </button>
-          ))}
+          {drinks?.filter((d) => d.available).map((drink) => {
+            const count = getCount(selectedDrinks, drink.id);
+            return (
+              <div
+                key={drink.id}
+                className={`rounded-xl border-2 p-4 transition-all ${
+                  count > 0
+                    ? "border-[var(--accent)] bg-[var(--accent-light)] shadow-sm"
+                    : "border-[var(--border)] bg-white"
+                }`}
+              >
+                <p className="font-semibold text-[var(--foreground)]">{drink.name}</p>
+                <div className="mt-1.5 flex flex-wrap gap-1">
+                  <span className="rounded-md bg-gray-100 px-1.5 py-0.5 text-[10px] font-medium text-gray-600">
+                    {drink.size}
+                  </span>
+                  <span className={`rounded-md px-1.5 py-0.5 text-[10px] font-medium ${
+                    drink.withAlcohol ? "bg-amber-100 text-amber-700" : "bg-emerald-100 text-emerald-700"
+                  }`}>
+                    {drink.withAlcohol ? "Alcool" : "Sans alcool"}
+                  </span>
+                </div>
+                <p className="mt-1.5 text-sm font-bold text-[var(--accent)]">{drink.price.toFixed(2)} &euro;</p>
+                <div className="mt-3 flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setSelectedDrinks(removeItem(selectedDrinks, drink.id))}
+                    disabled={count === 0}
+                    className="flex h-7 w-7 items-center justify-center rounded-lg border border-[var(--border)] text-sm font-bold text-[var(--foreground)] hover:bg-gray-50 disabled:opacity-30"
+                  >
+                    -
+                  </button>
+                  <span className="min-w-[1.5rem] text-center text-sm font-semibold text-[var(--foreground)]">{count}</span>
+                  <button
+                    type="button"
+                    onClick={() => setSelectedDrinks(addItem(selectedDrinks, drink.id))}
+                    className="flex h-7 w-7 items-center justify-center rounded-lg border border-[var(--accent)] bg-[var(--accent)] text-sm font-bold text-white hover:opacity-90"
+                  >
+                    +
+                  </button>
+                </div>
+              </div>
+            );
+          })}
         </div>
       </div>
 
@@ -121,26 +175,40 @@ export const OrderForm: React.FC<OrderFormProps> = ({ onSubmit, isPending }) => 
           <span>{"\uD83C\uDF70"}</span> Desserts
         </h3>
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-          {desserts?.filter((d) => d.available).map((dessert) => (
-            <button
-              key={dessert.id}
-              type="button"
-              onClick={() => toggleItem(selectedDesserts, setSelectedDesserts, dessert.id)}
-              className={`rounded-xl border-2 p-4 text-left transition-all ${
-                selectedDesserts.includes(dessert.id)
-                  ? "border-[var(--accent)] bg-[var(--accent-light)] shadow-sm"
-                  : "border-[var(--border)] bg-white hover:border-gray-300 hover:shadow-sm"
-              }`}
-            >
-              <p className="font-semibold text-[var(--foreground)]">{dessert.name}</p>
-              <p className="mt-1 text-sm font-bold text-[var(--accent)]">{dessert.price.toFixed(2)} &euro;</p>
-              {selectedDesserts.includes(dessert.id) && (
-                <span className="mt-2 inline-block rounded-full bg-[var(--accent)] px-2 py-0.5 text-xs font-medium text-white">
-                  {"\u2713"} Selectionne
-                </span>
-              )}
-            </button>
-          ))}
+          {desserts?.filter((d) => d.available).map((dessert) => {
+            const count = getCount(selectedDesserts, dessert.id);
+            return (
+              <div
+                key={dessert.id}
+                className={`rounded-xl border-2 p-4 transition-all ${
+                  count > 0
+                    ? "border-[var(--accent)] bg-[var(--accent-light)] shadow-sm"
+                    : "border-[var(--border)] bg-white"
+                }`}
+              >
+                <p className="font-semibold text-[var(--foreground)]">{dessert.name}</p>
+                <p className="mt-1 text-sm font-bold text-[var(--accent)]">{dessert.price.toFixed(2)} &euro;</p>
+                <div className="mt-3 flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setSelectedDesserts(removeItem(selectedDesserts, dessert.id))}
+                    disabled={count === 0}
+                    className="flex h-7 w-7 items-center justify-center rounded-lg border border-[var(--border)] text-sm font-bold text-[var(--foreground)] hover:bg-gray-50 disabled:opacity-30"
+                  >
+                    -
+                  </button>
+                  <span className="min-w-[1.5rem] text-center text-sm font-semibold text-[var(--foreground)]">{count}</span>
+                  <button
+                    type="button"
+                    onClick={() => setSelectedDesserts(addItem(selectedDesserts, dessert.id))}
+                    className="flex h-7 w-7 items-center justify-center rounded-lg border border-[var(--accent)] bg-[var(--accent)] text-sm font-bold text-white hover:opacity-90"
+                  >
+                    +
+                  </button>
+                </div>
+              </div>
+            );
+          })}
         </div>
       </div>
 

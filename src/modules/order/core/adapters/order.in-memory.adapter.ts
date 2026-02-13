@@ -9,6 +9,8 @@ export class OrderInMemoryAdapter implements IOrderPort {
       drinks: [1],
       desserts: [1],
       totalPrice: 19,
+      discountAmount: 0,
+      discountPercentage: 0,
       processed: false,
       createdAt: new Date(),
       updatedAt: new Date(),
@@ -35,6 +37,8 @@ export class OrderInMemoryAdapter implements IOrderPort {
       ...dto,
       id: this.nextId++,
       totalPrice: 0,
+      discountAmount: 0,
+      discountPercentage: 0,
       processed: false,
       createdAt: now,
       updatedAt: now,
@@ -73,7 +77,7 @@ export class OrderInMemoryAdapter implements IOrderPort {
     filters: OrderDomainModel.OrderFiltersDto
   ): Promise<OrderDomainModel.OrderDto[]> {
     let result = [...this.orders];
-    if (filters.processed !== undefined) {
+    if (filters.processed != null) {
       result = result.filter((o) => o.processed === filters.processed);
     }
     return result;

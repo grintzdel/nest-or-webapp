@@ -46,11 +46,11 @@ export class DessertInMemoryAdapter implements IDessertPort {
     filters: DessertDomainModel.DessertFiltersDto
   ): Promise<DessertDomainModel.DessertDto[]> {
     let result = [...this.desserts];
-    if (filters.name !== undefined) {
+    if (filters.name != null) {
       const q = filters.name.toLowerCase();
       result = result.filter((d) => d.name.toLowerCase().includes(q));
     }
-    if (filters.available !== undefined) {
+    if (filters.available != null) {
       result = result.filter((d) => d.available === filters.available);
     }
     return result;

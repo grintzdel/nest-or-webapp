@@ -67,9 +67,21 @@ export const OrderDetail: React.FC<OrderDetailProps> = ({ id }) => {
             </span>
           </div>
 
-          <p className="mt-3 text-3xl font-extrabold text-[var(--accent)]">
-            {order.totalPrice.toFixed(2)} &euro;
-          </p>
+          <div className="mt-3 flex items-baseline gap-3">
+            <p className="text-3xl font-extrabold text-[var(--accent)]">
+              {order.totalPrice.toFixed(2)} &euro;
+            </p>
+            {order.discountAmount > 0 && (
+              <>
+                <p className="text-lg text-[var(--muted)] line-through">
+                  {(order.totalPrice + order.discountAmount).toFixed(2)} &euro;
+                </p>
+                <span className="rounded-md bg-emerald-100 px-2 py-0.5 text-xs font-semibold text-emerald-700">
+                  -{Math.round(order.discountPercentage)}%
+                </span>
+              </>
+            )}
+          </div>
 
           <p className="mt-3 text-sm text-[var(--muted)]">
             Creee le{" "}

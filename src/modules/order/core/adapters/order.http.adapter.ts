@@ -98,7 +98,7 @@ export class OrderHttpAdapter implements IOrderPort {
   ): Promise<OrderDomainModel.OrderDto[]> {
     try {
       const params: Record<string, string> = {};
-      if (filters.processed !== undefined) params.processed = String(filters.processed);
+      if (filters.processed != null) params.processed = String(filters.processed);
       const res = await this.api.get<OrderDomainModel.OrderDto[]>("/orders", { params });
       return res.data;
     } catch (error) {

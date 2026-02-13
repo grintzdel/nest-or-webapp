@@ -72,23 +72,23 @@ export class PizzaInMemoryAdapter implements IPizzaPort {
     filters: PizzaDomainModel.PizzaFiltersDto
   ): Promise<PizzaDomainModel.PizzaDto[]> {
     let result = [...this.pizzas];
-    if (filters.ingredient !== undefined) {
+    if (filters.ingredient != null) {
       const q = filters.ingredient.toLowerCase();
       result = result.filter((p) =>
         p.ingredients.some((i) => i.toLowerCase().includes(q))
       );
     }
-    if (filters.ingredients !== undefined) {
+    if (filters.ingredients != null) {
       const items = filters.ingredients.split(",").map((s) => s.trim().toLowerCase());
       result = result.filter((p) =>
         items.every((q) => p.ingredients.some((i) => i.toLowerCase().includes(q)))
       );
     }
-    if (filters.name !== undefined) {
+    if (filters.name != null) {
       const q = filters.name.toLowerCase();
       result = result.filter((p) => p.name.toLowerCase().includes(q));
     }
-    if (filters.available !== undefined) {
+    if (filters.available != null) {
       result = result.filter((p) => p.available === filters.available);
     }
     return result;

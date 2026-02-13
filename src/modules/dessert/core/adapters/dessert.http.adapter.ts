@@ -81,8 +81,8 @@ export class DessertHttpAdapter implements IDessertPort {
   ): Promise<DessertDomainModel.DessertDto[]> {
     try {
       const params: Record<string, string> = {};
-      if (filters.name !== undefined) params.name = filters.name;
-      if (filters.available !== undefined) params.available = String(filters.available);
+      if (filters.name != null) params.name = filters.name;
+      if (filters.available != null) params.available = String(filters.available);
       const res = await this.api.get<DessertDomainModel.DessertDto[]>("/desserts", { params });
       return res.data;
     } catch (error) {

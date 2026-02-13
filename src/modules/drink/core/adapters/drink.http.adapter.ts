@@ -80,10 +80,10 @@ export class DrinkHttpAdapter implements IDrinkPort {
   ): Promise<DrinkDomainModel.DrinkDto[]> {
     try {
       const params: Record<string, string> = {};
-      if (filters.name !== undefined) params.name = filters.name;
-      if (filters.available !== undefined) params.available = String(filters.available);
-      if (filters.withAlcohol !== undefined) params.withAlcohol = String(filters.withAlcohol);
-      if (filters.size !== undefined) params.size = filters.size;
+      if (filters.name != null) params.name = filters.name;
+      if (filters.available != null) params.available = String(filters.available);
+      if (filters.withAlcohol != null) params.withAlcohol = String(filters.withAlcohol);
+      if (filters.size != null) params.size = filters.size;
       const res = await this.api.get<DrinkDomainModel.DrinkDto[]>("/drinks", { params });
       return res.data;
     } catch (error) {
